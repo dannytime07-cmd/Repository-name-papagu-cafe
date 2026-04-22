@@ -54,6 +54,37 @@
       text-transform: uppercase;
     }
 
+    /* ── MASCOT ── */
+    .mascot-wrap {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mascot-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 4px 24px rgba(90, 60, 20, 0.18);
+    }
+
+    .mascot-name {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #f5ede0;
+      letter-spacing: 0.1em;
+    }
+
+    .mascot-desc {
+      font-size: 0.78rem;
+      color: #c9b49a;
+      letter-spacing: 0.08em;
+    }
+
     /* ── NAV ── */
     nav {
       display: flex;
@@ -317,6 +348,11 @@
 <header>
   <div class="cafe-name">PAPAGU</div>
   <div class="cafe-sub">Café &nbsp;·&nbsp; Est. 2026</div>
+  <div class="mascot-wrap">
+    <img src="pagu.jpg" alt="파구" class="mascot-img">
+    <div class="mascot-name">파구</div>
+    <div class="mascot-desc">파파구 카페의 공식 마스코트</div>
+  </div>
 </header>
 
 <nav>
@@ -335,7 +371,7 @@
   <div class="menu-grid" id="menu-grid">
 
     <div class="card" data-category="coffee" data-price="4000">
-      <div class="card-img-wrap" style="background:#ddeaf0;">☕</div>
+      <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=600&h=450&fit=crop&auto=format" alt="아메리카노"></div>
       <div class="card-body">
         <div class="card-name">아메리카노</div>
         <div class="card-desc">진하고 깔끔한 에스프레소에 물을 더한 클래식 커피</div>
@@ -347,7 +383,7 @@
     </div>
 
     <div class="card" data-category="coffee" data-price="5000">
-      <div class="card-img-wrap" style="background:#f2e8d8;">🥛</div>
+      <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1561047029-3000c68339ca?w=600&h=450&fit=crop&auto=format" alt="카페라떼"></div>
       <div class="card-body">
         <div class="card-name">카페라떼</div>
         <div class="card-desc">부드러운 스팀 밀크와 에스프레소의 완벽한 조화</div>
@@ -359,7 +395,7 @@
     </div>
 
     <div class="card" data-category="coffee" data-price="6000">
-      <div class="card-img-wrap" style="background:#ede8f5;">🍦</div>
+      <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&h=450&fit=crop&auto=format" alt="바닐라라떼"></div>
       <div class="card-body">
         <div class="card-name">바닐라라떼</div>
         <div class="card-desc">달콤한 바닐라 시럽과 에스프레소가 어우러진 부드러운 라떼</div>
@@ -371,7 +407,7 @@
     </div>
 
     <div class="card" data-category="non-coffee" data-price="6000">
-      <div class="card-img-wrap" style="background:#d8ead8;">🍵</div>
+      <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=600&h=450&fit=crop&auto=format" alt="녹차라떼"></div>
       <div class="card-body">
         <div class="card-name">녹차라떼</div>
         <div class="card-desc">향긋한 녹차와 부드러운 밀크가 어우러진 그린 라떼</div>
@@ -383,7 +419,7 @@
     </div>
 
     <div class="card" data-category="dessert" data-price="6000">
-      <div class="card-img-wrap" style="background:#f5e8c4;">🥕</div>
+      <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=600&h=450&fit=crop&auto=format" alt="당근케이크"></div>
       <div class="card-body">
         <div class="card-name">당근케이크</div>
         <div class="card-desc">촉촉한 당근과 크림치즈 프로스팅의 달콤한 조합</div>
@@ -395,7 +431,7 @@
     </div>
 
     <div class="card" data-category="dessert" data-price="6000">
-      <div class="card-img-wrap" style="background:#ede0cc;">🍰</div>
+      <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=600&h=450&fit=crop&auto=format" alt="티라미수"></div>
       <div class="card-body">
         <div class="card-name">티라미수</div>
         <div class="card-desc">마스카포네 크림과 에스프레소가 스민 이탈리안 클래식</div>
@@ -407,7 +443,7 @@
     </div>
 
     <div class="card" data-category="dessert" data-price="4000">
-      <div class="card-img-wrap" style="background:#f5f0e0;">🥐</div>
+      <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&h=450&fit=crop&auto=format" alt="크로와상"></div>
       <div class="card-body">
         <div class="card-name">크로와상</div>
         <div class="card-desc">겹겹이 쌓인 버터 결이 바삭하게 살아있는 프렌치 페이스트리</div>
