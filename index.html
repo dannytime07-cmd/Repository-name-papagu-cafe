@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>파파구 카페</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Serif KR', 'Apple SD Gothic Neo', serif;
+      background: #f5ede0;
+      color: #3a2e22;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: #f0e4d0;
+      border-bottom: 1px solid #ddd0bc;
+      text-align: center;
+      padding: 60px 20px 48px;
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 2px;
+      background: #b07d55;
+      margin: 20px auto 0;
+    }
+
+    .cafe-name {
+      font-family: 'Playfair Display', 'Noto Serif KR', serif;
+      font-size: clamp(3rem, 10vw, 5.5rem);
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: #3a2e22;
+      line-height: 1;
+    }
+
+    .cafe-sub {
+      margin-top: 14px;
+      font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+      letter-spacing: 0.25em;
+      color: #9a7b5a;
+      text-transform: uppercase;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 20px 20px;
+      background: #f0e4d0;
+      flex-wrap: wrap;
+    }
+
+    nav button {
+      background: none;
+      border: 1.5px solid #c4a882;
+      color: #7a5c3a;
+      padding: 8px 24px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.22s ease;
+    }
+
+    nav button:hover {
+      background: #e8d5bc;
+    }
+
+    nav button.active {
+      background: #8a6040;
+      border-color: #8a6040;
+      color: #fff;
+    }
+
+    /* ── SORT BAR ── */
+    .sort-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 20px;
+      background: #ede4d6;
+      border-bottom: 1px solid #ddd0bc;
+      flex-wrap: wrap;
+    }
+
+    .sort-bar button {
+      background: none;
+      border: 1.5px solid #c4a882;
+      color: #7a5c3a;
+      padding: 6px 20px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.22s ease;
+    }
+
+    .sort-bar button:hover {
+      background: #e0cdb8;
+    }
+
+    .sort-bar button.active {
+      background: #6b4a2c;
+      border-color: #6b4a2c;
+      color: #fff;
+    }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 52px 20px 80px;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 0.72rem;
+      letter-spacing: 0.3em;
+      color: #b07d55;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: #fffaf4;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid #e8d8c4;
+      box-shadow: 0 2px 16px rgba(100, 70, 30, 0.07);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: scale(1.04);
+      box-shadow: 0 12px 32px rgba(100, 70, 30, 0.16);
+    }
+
+    .card-img-wrap {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.8rem;
+      flex-shrink: 0;
+    }
+
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-body {
+      padding: 20px 20px 22px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-name {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #3a2e22;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 0.78rem;
+      color: #9a8070;
+      line-height: 1.65;
+      flex: 1;
+      margin-bottom: 16px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #ede0cc;
+      padding-top: 14px;
+    }
+
+    .card-price {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #8a6040;
+    }
+
+    .card-tag {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      color: #b09070;
+      background: #f0e4d0;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 0 0 28px;
+    }
+
+    .section-divider span {
+      font-size: 0.72rem;
+      letter-spacing: 0.3em;
+      color: #b07d55;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .section-divider::before,
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #ddd0bc;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 32px 20px;
+      background: #3a2e22;
+      color: #8a7060;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+    }
+
+    footer strong {
+      display: block;
+      color: #c4a882;
+      font-size: 1rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 14px;
+    }
+
+    .footer-info {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      color: #b09070;
+      font-size: 0.82rem;
+      margin-bottom: 16px;
+      line-height: 1.8;
+    }
+
+    .footer-dot {
+      color: #5a4530;
+    }
+
+    .footer-copy {
+      color: #5a4530;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header {
+        padding: 48px 20px 36px;
+      }
+
+      .menu-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .card-img-wrap {
+        aspect-ratio: 16 / 9;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="cafe-name">PAPAGU</div>
+  <div class="cafe-sub">Café &nbsp;·&nbsp; Est. 2026</div>
+</header>
+
+<nav>
+  <button class="active" onclick="filterMenu('all', this)">전체</button>
+  <button onclick="filterMenu('coffee', this)">커피</button>
+  <button onclick="filterMenu('non-coffee', this)">논커피</button>
+  <button onclick="filterMenu('dessert', this)">디저트</button>
+</nav>
+
+<div class="sort-bar">
+  <button onclick="sortMenu('asc', this)">가격 낮은 순 ↑</button>
+  <button onclick="sortMenu('desc', this)">가격 높은 순 ↓</button>
+</div>
+
+<main>
+  <div class="menu-grid" id="menu-grid">
+
+    <div class="card" data-category="coffee" data-price="4000">
+      <div class="card-img-wrap" style="background:#ddeaf0;">☕</div>
+      <div class="card-body">
+        <div class="card-name">아메리카노</div>
+        <div class="card-desc">진하고 깔끔한 에스프레소에 물을 더한 클래식 커피</div>
+        <div class="card-footer">
+          <span class="card-price">4,000원</span>
+          <span class="card-tag">Coffee</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-category="coffee" data-price="5000">
+      <div class="card-img-wrap" style="background:#f2e8d8;">🥛</div>
+      <div class="card-body">
+        <div class="card-name">카페라떼</div>
+        <div class="card-desc">부드러운 스팀 밀크와 에스프레소의 완벽한 조화</div>
+        <div class="card-footer">
+          <span class="card-price">5,000원</span>
+          <span class="card-tag">Coffee</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-category="coffee" data-price="6000">
+      <div class="card-img-wrap" style="background:#ede8f5;">🍦</div>
+      <div class="card-body">
+        <div class="card-name">바닐라라떼</div>
+        <div class="card-desc">달콤한 바닐라 시럽과 에스프레소가 어우러진 부드러운 라떼</div>
+        <div class="card-footer">
+          <span class="card-price">6,000원</span>
+          <span class="card-tag">Coffee</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-category="non-coffee" data-price="6000">
+      <div class="card-img-wrap" style="background:#d8ead8;">🍵</div>
+      <div class="card-body">
+        <div class="card-name">녹차라떼</div>
+        <div class="card-desc">향긋한 녹차와 부드러운 밀크가 어우러진 그린 라떼</div>
+        <div class="card-footer">
+          <span class="card-price">6,000원</span>
+          <span class="card-tag">Non-Coffee</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-category="dessert" data-price="6000">
+      <div class="card-img-wrap" style="background:#f5e8c4;">🥕</div>
+      <div class="card-body">
+        <div class="card-name">당근케이크</div>
+        <div class="card-desc">촉촉한 당근과 크림치즈 프로스팅의 달콤한 조합</div>
+        <div class="card-footer">
+          <span class="card-price">6,000원</span>
+          <span class="card-tag">Cake</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-category="dessert" data-price="6000">
+      <div class="card-img-wrap" style="background:#ede0cc;">🍰</div>
+      <div class="card-body">
+        <div class="card-name">티라미수</div>
+        <div class="card-desc">마스카포네 크림과 에스프레소가 스민 이탈리안 클래식</div>
+        <div class="card-footer">
+          <span class="card-price">6,000원</span>
+          <span class="card-tag">Cake</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-category="dessert" data-price="4000">
+      <div class="card-img-wrap" style="background:#f5f0e0;">🥐</div>
+      <div class="card-body">
+        <div class="card-name">크로와상</div>
+        <div class="card-desc">겹겹이 쌓인 버터 결이 바삭하게 살아있는 프렌치 페이스트리</div>
+        <div class="card-footer">
+          <span class="card-price">4,000원</span>
+          <span class="card-tag">Pastry</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <strong>PAPAGU</strong>
+  <div class="footer-info">
+    <span>📍 서울시 송파구 올림픽로 123</span>
+    <span class="footer-dot">·</span>
+    <span>📞 02-1234-5678</span>
+    <span class="footer-dot">·</span>
+    <span>🕗 매일 08:00 – 22:00</span>
+  </div>
+  <div class="footer-copy">&copy; 2026 Papagu Cafe. All rights reserved.</div>
+</footer>
+
+<script>
+  let activeCategory = 'all';
+  let activeSort = null;
+
+  function filterMenu(category, btn) {
+    activeCategory = category;
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  }
+
+  function sortMenu(order, btn) {
+    if (activeSort === order) {
+      activeSort = null;
+      document.querySelectorAll('.sort-bar button').forEach(b => b.classList.remove('active'));
+    } else {
+      activeSort = order;
+      document.querySelectorAll('.sort-bar button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    render();
+  }
+
+  function render() {
+    const grid = document.getElementById('menu-grid');
+    let cards = Array.from(grid.querySelectorAll('.card'));
+
+    cards.forEach(card => {
+      card.style.display = (activeCategory === 'all' || card.dataset.category === activeCategory) ? '' : 'none';
+    });
+
+    if (activeSort) {
+      const visible = cards.filter(c => c.style.display !== 'none');
+      visible.sort((a, b) => {
+        const pa = parseInt(a.dataset.price);
+        const pb = parseInt(b.dataset.price);
+        return activeSort === 'asc' ? pa - pb : pb - pa;
+      });
+      visible.forEach(card => grid.appendChild(card));
+    }
+  }
+</script>
+
+</body>
+</html>
