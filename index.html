@@ -3,203 +3,278 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>파파구 카페</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+  <title>PAPAGU CAFÉ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #0f0f0f;
+      --white: #ffffff;
+      --gray-50: #f9f9f9;
+      --gray-100: #f0f0f0;
+      --gray-300: #d0d0d0;
+      --gray-500: #888888;
+      --gray-700: #444444;
+      --accent: #c09050;
+      --accent-dark: #8a6530;
     }
 
     body {
-      font-family: 'Noto Serif KR', 'Apple SD Gothic Neo', serif;
-      background: #f5ede0;
-      color: #3a2e22;
-      min-height: 100vh;
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      background: var(--white);
+      color: var(--black);
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: var(--black);
+      color: var(--gray-300);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      padding: 9px 40px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 24px;
     }
 
     /* ── HEADER ── */
     header {
-      background: #f0e4d0;
-      border-bottom: 1px solid #ddd0bc;
-      text-align: center;
-      padding: 60px 20px 48px;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-100);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--black);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    header nav {
+      display: flex;
+      gap: 36px;
+      background: none;
+      padding: 0;
+      border: none;
+    }
+
+    header nav a {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--gray-700);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    header nav a:hover { color: var(--black); }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--black);
+      min-height: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 60px 80px;
+      gap: 40px;
+      overflow: hidden;
       position: relative;
     }
 
-    header::after {
+    .hero::before {
       content: '';
-      display: block;
-      width: 60px;
-      height: 2px;
-      background: #b07d55;
-      margin: 20px auto 0;
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, #2a1a08 0%, #0f0f0f 60%);
     }
 
-    .cafe-name {
-      font-family: 'Playfair Display', 'Noto Serif KR', serif;
-      font-size: clamp(3rem, 10vw, 5.5rem);
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      color: #3a2e22;
-      line-height: 1;
+    .hero-text {
+      position: relative;
+      z-index: 1;
+      flex: 1;
     }
 
-    .cafe-sub {
-      margin-top: 14px;
-      font-size: clamp(0.75rem, 2.5vw, 0.9rem);
-      letter-spacing: 0.25em;
-      color: #9a7b5a;
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.35em;
+      color: var(--accent);
       text-transform: uppercase;
+      margin-bottom: 20px;
     }
 
-    /* ── MASCOT ── */
-    .mascot-wrap {
-      margin-top: 32px;
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 5vw, 4.5rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-desc {
+      font-size: 0.88rem;
+      color: #aaa;
+      line-height: 1.8;
+      max-width: 360px;
+      margin-bottom: 36px;
+      font-weight: 300;
+    }
+
+    .hero-mascot {
+      position: relative;
+      z-index: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 14px;
+      flex-shrink: 0;
     }
 
-    .mascot-img {
-      width: 120px;
-      height: 120px;
+    .hero-mascot img {
+      width: 180px;
+      height: 180px;
       border-radius: 50%;
       object-fit: cover;
-      box-shadow: 0 4px 24px rgba(90, 60, 20, 0.18);
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 40px rgba(192, 144, 80, 0.3);
     }
 
-    .mascot-name {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #f5ede0;
-      letter-spacing: 0.1em;
+    .hero-mascot-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--white);
+      letter-spacing: 0.12em;
     }
 
-    .mascot-desc {
-      font-size: 0.78rem;
-      color: #c9b49a;
-      letter-spacing: 0.08em;
+    .hero-mascot-sub {
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
     }
 
-    /* ── NAV ── */
-    nav {
+    /* ── MENU SECTION ── */
+    .menu-section {
+      background: var(--white);
+      padding: 72px 40px 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── CONTROLS ── */
+    .controls {
       display: flex;
-      justify-content: center;
-      gap: 10px;
-      padding: 20px 20px;
-      background: #f0e4d0;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
-    nav button {
+    .filter-btn {
       background: none;
-      border: 1.5px solid #c4a882;
-      color: #7a5c3a;
-      padding: 8px 24px;
-      border-radius: 999px;
+      border: 1px solid var(--gray-300);
+      color: var(--gray-700);
+      padding: 8px 20px;
       font-family: inherit;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       letter-spacing: 0.08em;
       cursor: pointer;
-      transition: all 0.22s ease;
+      transition: all 0.2s;
+      border-radius: 2px;
     }
 
-    nav button:hover {
-      background: #e8d5bc;
+    .filter-btn:hover { border-color: var(--black); color: var(--black); }
+
+    .filter-btn.active {
+      background: var(--black);
+      border-color: var(--black);
+      color: var(--white);
     }
 
-    nav button.active {
-      background: #8a6040;
-      border-color: #8a6040;
-      color: #fff;
-    }
-
-    /* ── SORT BAR ── */
-    .sort-bar {
+    .sort-group {
       display: flex;
-      justify-content: center;
-      gap: 10px;
-      padding: 14px 20px;
-      background: #ede4d6;
-      border-bottom: 1px solid #ddd0bc;
-      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    .sort-bar button {
+    .sort-btn {
       background: none;
-      border: 1.5px solid #c4a882;
-      color: #7a5c3a;
-      padding: 6px 20px;
-      border-radius: 999px;
+      border: 1px solid var(--gray-300);
+      color: var(--gray-500);
+      padding: 8px 16px;
       font-family: inherit;
-      font-size: 0.82rem;
+      font-size: 0.75rem;
       letter-spacing: 0.06em;
       cursor: pointer;
-      transition: all 0.22s ease;
+      transition: all 0.2s;
+      border-radius: 2px;
     }
 
-    .sort-bar button:hover {
-      background: #e0cdb8;
+    .sort-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .sort-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--white);
     }
 
-    .sort-bar button.active {
-      background: #6b4a2c;
-      border-color: #6b4a2c;
-      color: #fff;
-    }
-
-    /* ── MAIN ── */
-    main {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 52px 20px 80px;
-    }
-
-    .section-label {
-      text-align: center;
-      font-size: 0.72rem;
-      letter-spacing: 0.3em;
-      color: #b07d55;
-      text-transform: uppercase;
-      margin-bottom: 32px;
-    }
-
+    /* ── GRID ── */
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-bottom: 60px;
+      gap: 2px;
     }
 
     /* ── CARD ── */
     .card {
-      background: #fffaf4;
-      border-radius: 24px;
+      background: var(--white);
+      border: 1px solid var(--gray-100);
       overflow: hidden;
-      border: 1px solid #e8d8c4;
-      box-shadow: 0 2px 16px rgba(100, 70, 30, 0.07);
-      transition: transform 0.22s ease, box-shadow 0.22s ease;
-      display: flex;
-      flex-direction: column;
+      cursor: pointer;
+      transition: box-shadow 0.25s ease;
     }
 
     .card:hover {
-      transform: scale(1.04);
-      box-shadow: 0 12px 32px rgba(100, 70, 30, 0.16);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+      transform: translateY(-2px);
+      transition: box-shadow 0.25s ease, transform 0.25s ease;
+      z-index: 1;
+      position: relative;
     }
 
     .card-img-wrap {
       width: 100%;
       aspect-ratio: 4 / 3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3.8rem;
-      flex-shrink: 0;
+      overflow: hidden;
+      background: var(--gray-100);
     }
 
     .card-img-wrap img {
@@ -207,177 +282,200 @@
       height: 100%;
       object-fit: cover;
       display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover .card-img-wrap img {
+      transform: scale(1.05);
     }
 
     .card-body {
-      padding: 20px 20px 22px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
+      padding: 22px 24px 24px;
+    }
+
+    .card-category {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-weight: 500;
     }
 
     .card-name {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 1.3rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
       font-weight: 700;
-      letter-spacing: 0.04em;
-      color: #3a2e22;
+      color: var(--black);
       margin-bottom: 8px;
+      line-height: 1.3;
     }
 
     .card-desc {
       font-size: 0.78rem;
-      color: #9a8070;
-      line-height: 1.65;
-      flex: 1;
-      margin-bottom: 16px;
+      color: var(--gray-500);
+      line-height: 1.7;
+      margin-bottom: 18px;
+      font-weight: 300;
     }
 
     .card-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-top: 1px solid #ede0cc;
-      padding-top: 14px;
+      padding-top: 16px;
+      border-top: 1px solid var(--gray-100);
     }
 
     .card-price {
       font-size: 1rem;
-      font-weight: 700;
-      color: #8a6040;
+      font-weight: 600;
+      color: var(--black);
+      letter-spacing: 0.02em;
     }
 
     .card-tag {
-      font-size: 0.68rem;
-      letter-spacing: 0.1em;
-      color: #b09070;
-      background: #f0e4d0;
-      padding: 3px 10px;
-      border-radius: 999px;
-    }
-
-    /* ── DIVIDER ── */
-    .section-divider {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin: 0 0 28px;
-    }
-
-    .section-divider span {
-      font-size: 0.72rem;
-      letter-spacing: 0.3em;
-      color: #b07d55;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      color: var(--gray-500);
       text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .section-divider::before,
-    .section-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: #ddd0bc;
+      font-weight: 500;
     }
 
     /* ── FOOTER ── */
     footer {
-      text-align: center;
-      padding: 32px 20px;
-      background: #3a2e22;
-      color: #8a7060;
-      font-size: 0.78rem;
-      letter-spacing: 0.1em;
+      background: var(--black);
+      color: #666;
+      padding: 56px 40px 40px;
     }
 
-    footer strong {
-      display: block;
-      color: #c4a882;
-      font-size: 1rem;
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid #222;
+      margin-bottom: 28px;
+    }
+
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
       letter-spacing: 0.2em;
-      margin-bottom: 14px;
+      color: var(--white);
+    }
+
+    .footer-brand span { color: var(--accent); }
+
+    .footer-brand p {
+      font-size: 0.75rem;
+      color: #555;
+      letter-spacing: 0.08em;
+      margin-top: 8px;
+      font-weight: 300;
     }
 
     .footer-info {
       display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 6px 12px;
-      color: #b09070;
-      font-size: 0.82rem;
-      margin-bottom: 16px;
-      line-height: 1.8;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: #666;
+      line-height: 1.6;
+      text-align: right;
     }
 
-    .footer-dot {
-      color: #5a4530;
-    }
+    .footer-info span { color: #999; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 2px; }
 
     .footer-copy {
-      color: #5a4530;
-      font-size: 0.72rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      font-size: 0.7rem;
+      color: #333;
       letter-spacing: 0.08em;
     }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      .menu-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-      }
+    @media (max-width: 900px) {
+      .menu-grid { grid-template-columns: repeat(2, 1fr); }
+      .hero { padding: 50px 40px; }
     }
 
-    @media (max-width: 480px) {
-      header {
-        padding: 48px 20px 36px;
-      }
-
-      .menu-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      .card-img-wrap {
-        aspect-ratio: 16 / 9;
-      }
+    @media (max-width: 600px) {
+      header { padding: 0 20px; }
+      header nav { display: none; }
+      .hero { flex-direction: column; padding: 48px 24px; text-align: center; min-height: auto; }
+      .hero-desc { max-width: 100%; }
+      .menu-section { padding: 48px 20px 60px; }
+      .menu-grid { grid-template-columns: 1fr; gap: 1px; }
+      .controls { flex-direction: column; align-items: flex-start; }
+      .footer-inner { flex-direction: column; }
+      .footer-info { text-align: left; }
+      .topbar { display: none; }
     }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="cafe-name">PAPAGU</div>
-  <div class="cafe-sub">Café &nbsp;·&nbsp; Est. 2026</div>
-  <div class="mascot-wrap">
-    <img src="pagu.jpg" alt="파구" class="mascot-img">
-    <div class="mascot-name">파구</div>
-    <div class="mascot-desc">파파구 카페의 공식 마스코트</div>
-  </div>
-</header>
-
-<nav>
-  <button class="active" onclick="filterMenu('all', this)">전체</button>
-  <button onclick="filterMenu('coffee', this)">커피</button>
-  <button onclick="filterMenu('non-coffee', this)">논커피</button>
-  <button onclick="filterMenu('dessert', this)">디저트</button>
-</nav>
-
-<div class="sort-bar">
-  <button onclick="sortMenu('asc', this)">가격 낮은 순 ↑</button>
-  <button onclick="sortMenu('desc', this)">가격 높은 순 ↓</button>
+<div class="topbar">
+  <span>서울시 송파구 올림픽로 123</span>
+  <span>02-1234-5678</span>
+  <span>매일 08:00 – 22:00</span>
 </div>
 
-<main>
+<header>
+  <a class="logo" href="#">PAPA<span>GU</span></a>
+  <nav>
+    <a href="#">메뉴</a>
+    <a href="#">매장소개</a>
+    <a href="#">공지사항</a>
+    <a href="#">오시는길</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-eyebrow">Welcome to Papagu Café</div>
+    <div class="hero-title">Every cup<br>tells a <em>story</em></div>
+    <div class="hero-desc">파파구 카페는 한 잔의 커피와 달콤한 디저트로 일상의 여유를 선물합니다.</div>
+  </div>
+  <div class="hero-mascot">
+    <img src="pagu.jpg" alt="파구">
+    <div class="hero-mascot-name">PAGU</div>
+    <div class="hero-mascot-sub">Mascot of Papagu</div>
+  </div>
+</section>
+
+<div class="menu-section">
+  <div class="controls">
+    <div class="filter-group">
+      <button class="filter-btn active" onclick="filterMenu('all', this)">ALL</button>
+      <button class="filter-btn" onclick="filterMenu('coffee', this)">COFFEE</button>
+      <button class="filter-btn" onclick="filterMenu('non-coffee', this)">NON-COFFEE</button>
+      <button class="filter-btn" onclick="filterMenu('dessert', this)">DESSERT</button>
+    </div>
+    <div class="sort-group">
+      <button class="sort-btn" onclick="sortMenu('asc', this)">가격 낮은 순 ↑</button>
+      <button class="sort-btn" onclick="sortMenu('desc', this)">가격 높은 순 ↓</button>
+    </div>
+  </div>
+
   <div class="menu-grid" id="menu-grid">
 
     <div class="card" data-category="coffee" data-price="4000">
       <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=600&h=450&fit=crop&auto=format" alt="아메리카노"></div>
       <div class="card-body">
+        <div class="card-category">Coffee</div>
         <div class="card-name">아메리카노</div>
         <div class="card-desc">진하고 깔끔한 에스프레소에 물을 더한 클래식 커피</div>
         <div class="card-footer">
           <span class="card-price">4,000원</span>
-          <span class="card-tag">Coffee</span>
+          <span class="card-tag">Espresso</span>
         </div>
       </div>
     </div>
@@ -385,11 +483,12 @@
     <div class="card" data-category="coffee" data-price="5000">
       <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1561047029-3000c68339ca?w=600&h=450&fit=crop&auto=format" alt="카페라떼"></div>
       <div class="card-body">
+        <div class="card-category">Coffee</div>
         <div class="card-name">카페라떼</div>
         <div class="card-desc">부드러운 스팀 밀크와 에스프레소의 완벽한 조화</div>
         <div class="card-footer">
           <span class="card-price">5,000원</span>
-          <span class="card-tag">Coffee</span>
+          <span class="card-tag">Latte</span>
         </div>
       </div>
     </div>
@@ -397,11 +496,12 @@
     <div class="card" data-category="coffee" data-price="6000">
       <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&h=450&fit=crop&auto=format" alt="바닐라라떼"></div>
       <div class="card-body">
+        <div class="card-category">Coffee</div>
         <div class="card-name">바닐라라떼</div>
         <div class="card-desc">달콤한 바닐라 시럽과 에스프레소가 어우러진 부드러운 라떼</div>
         <div class="card-footer">
           <span class="card-price">6,000원</span>
-          <span class="card-tag">Coffee</span>
+          <span class="card-tag">Latte</span>
         </div>
       </div>
     </div>
@@ -409,11 +509,12 @@
     <div class="card" data-category="non-coffee" data-price="6000">
       <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=600&h=450&fit=crop&auto=format" alt="녹차라떼"></div>
       <div class="card-body">
+        <div class="card-category">Non-Coffee</div>
         <div class="card-name">녹차라떼</div>
         <div class="card-desc">향긋한 녹차와 부드러운 밀크가 어우러진 그린 라떼</div>
         <div class="card-footer">
           <span class="card-price">6,000원</span>
-          <span class="card-tag">Non-Coffee</span>
+          <span class="card-tag">Tea Latte</span>
         </div>
       </div>
     </div>
@@ -421,6 +522,7 @@
     <div class="card" data-category="dessert" data-price="6000">
       <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=600&h=450&fit=crop&auto=format" alt="당근케이크"></div>
       <div class="card-body">
+        <div class="card-category">Dessert</div>
         <div class="card-name">당근케이크</div>
         <div class="card-desc">촉촉한 당근과 크림치즈 프로스팅의 달콤한 조합</div>
         <div class="card-footer">
@@ -433,6 +535,7 @@
     <div class="card" data-category="dessert" data-price="6000">
       <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=600&h=450&fit=crop&auto=format" alt="티라미수"></div>
       <div class="card-body">
+        <div class="card-category">Dessert</div>
         <div class="card-name">티라미수</div>
         <div class="card-desc">마스카포네 크림과 에스프레소가 스민 이탈리안 클래식</div>
         <div class="card-footer">
@@ -445,6 +548,7 @@
     <div class="card" data-category="dessert" data-price="4000">
       <div class="card-img-wrap"><img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&h=450&fit=crop&auto=format" alt="크로와상"></div>
       <div class="card-body">
+        <div class="card-category">Dessert</div>
         <div class="card-name">크로와상</div>
         <div class="card-desc">겹겹이 쌓인 버터 결이 바삭하게 살아있는 프렌치 페이스트리</div>
         <div class="card-footer">
@@ -455,18 +559,30 @@
     </div>
 
   </div>
-</main>
+</div>
 
 <footer>
-  <strong>PAPAGU</strong>
-  <div class="footer-info">
-    <span>📍 서울시 송파구 올림픽로 123</span>
-    <span class="footer-dot">·</span>
-    <span>📞 02-1234-5678</span>
-    <span class="footer-dot">·</span>
-    <span>🕗 매일 08:00 – 22:00</span>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      PAPA<span>GU</span>
+      <p>Café · Est. 2026</p>
+    </div>
+    <div class="footer-info">
+      <div>
+        <span>Address</span>
+        서울시 송파구 올림픽로 123
+      </div>
+      <div>
+        <span>Phone</span>
+        02-1234-5678
+      </div>
+      <div>
+        <span>Hours</span>
+        매일 08:00 – 22:00
+      </div>
+    </div>
   </div>
-  <div class="footer-copy">&copy; 2026 Papagu Cafe. All rights reserved.</div>
+  <div class="footer-copy">&copy; 2026 PAPAGU CAFÉ. All rights reserved.</div>
 </footer>
 
 <script>
@@ -475,7 +591,7 @@
 
   function filterMenu(category, btn) {
     activeCategory = category;
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     render();
   }
@@ -483,10 +599,10 @@
   function sortMenu(order, btn) {
     if (activeSort === order) {
       activeSort = null;
-      document.querySelectorAll('.sort-bar button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
     } else {
       activeSort = order;
-      document.querySelectorAll('.sort-bar button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     }
     render();
@@ -494,7 +610,7 @@
 
   function render() {
     const grid = document.getElementById('menu-grid');
-    let cards = Array.from(grid.querySelectorAll('.card'));
+    const cards = Array.from(grid.querySelectorAll('.card'));
 
     cards.forEach(card => {
       card.style.display = (activeCategory === 'all' || card.dataset.category === activeCategory) ? '' : 'none';
