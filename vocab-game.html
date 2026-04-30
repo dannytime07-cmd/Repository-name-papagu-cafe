@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WORD QUEST</title>
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#0b0b18; --surface:#13132a; --card:#1a1a35; --card2:#1f1f3d;
+  --border:#2a2a52; --primary:#7c6fff; --pg:rgba(124,111,255,.32);
+  --sec:#ff6b9d; --gold:#ffcf40; --green:#00e0a0; --red:#ff4d6a;
+  --orange:#ffab4f; --text:#dde0ff; --muted:#6060a0; --white:#fff; --r:14px;
+}
+body { font-family:'Segoe UI','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+       background:var(--bg); color:var(--text); min-height:100vh;
+       display:flex; align-items:flex-start; justify-content:center; }
+.bg-glow { position:fixed; inset:0; pointer-events:none; z-index:0;
+  background: radial-gradient(ellipse 60% 40% at 20% 20%,rgba(124,111,255,.07) 0%,transparent 70%),
+              radial-gradient(ellipse 50% 30% at 80% 80%,rgba(255,107,157,.05) 0%,transparent 70%); }
+.app { position:relative; z-index:1; width:100%; max-width:660px; padding:16px; }
+
+/* SCREENS */
+.screen { display:none; flex-direction:column; align-items:center; gap:16px; padding-bottom:32px; }
+.screen.active { display:flex; }
+
+/* NAV BAR */
+.nav-bar { width:100%; display:flex; align-items:center; gap:10px; padding:4px 0 2px; }
+.nav-back { background:var(--card); border:1px solid var(--border); border-radius:20px;
+  padding:7px 14px; font-size:.8rem; color:var(--muted); cursor:pointer; transition:all .15s; }
+.nav-back:hover { border-color:var(--primary); color:var(--primary); }
+.nav-t { font-size:.9rem; font-weight:700; color:var(--text); flex:1; text-align:center; }
+.nav-sp { width:72px; }
+
+/* LOGO */
+.logo { text-align:center; padding:16px 0 4px; }
+.logo h1 { font-size:2.8rem; font-weight:900; letter-spacing:-2px;
+  background:linear-gradient(135deg,var(--primary),var(--sec));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.logo p { color:var(--muted); margin-top:5px; font-size:.85rem; }
+
+/* SECTION LABEL */
+.sec-lbl { width:100%; font-size:.7rem; color:var(--muted);
+  text-transform:uppercase; letter-spacing:2px; padding-left:2px; }
+
+/* GRADE GRID */
+.grade-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; width:100%; }
+.grade-card { background:var(--card); border:1.5px solid var(--border);
+  border-radius:var(--r); padding:18px 8px; text-align:center; cursor:pointer; transition:all .18s; }
+.grade-card:hover { transform:translateY(-2px); }
+.grade-card .g-icon { font-size:1.6rem; margin-bottom:7px; }
+.grade-card h3 { font-size:.95rem; font-weight:800; color:var(--white); }
+.grade-card p  { font-size:.68rem; color:var(--muted); margin-top:2px; }
+.grade-card .g-stage { font-size:.65rem; margin-top:4px; padding:2px 8px;
+  border-radius:10px; display:inline-block; font-weight:700; }
+.grade-card.mid3  { border-color:rgba(0,224,160,.3); }
+.grade-card.high1 { border-color:rgba(124,111,255,.3); }
+.grade-card.high2 { border-color:rgba(255,171,79,.3); }
+.grade-card.high3 { border-color:rgba(255,77,106,.3); }
+.grade-card.mid3:hover  { border-color:var(--green); box-shadow:0 6px 20px rgba(0,224,160,.2); }
+.grade-card.high1:hover { border-color:var(--primary); box-shadow:0 6px 20px rgba(124,111,255,.2); }
+.grade-card.high2:hover { border-color:var(--orange); box-shadow:0 6px 20px rgba(255,171,79,.2); }
+.grade-card.high3:hover { border-color:var(--red); box-shadow:0 6px 20px rgba(255,77,106,.2); }
+
+/* MIX STRIP */
+.mix-strip { width:100%; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.mix-card { background:var(--card); border:1.5px solid var(--border);
+  border-radius:var(--r); padding:14px 16px; cursor:pointer; transition:all .18s;
+  display:flex; align-items:center; gap:12px; }
+.mix-card:hover { border-color:var(--primary); transform:translateY(-1px); box-shadow:0 6px 20px var(--pg); }
+.mix-card .icon { font-size:1.4rem; flex-shrink:0; }
+.mix-card h3 { font-size:.88rem; font-weight:700; color:var(--white); }
+.mix-card p  { font-size:.7rem; color:var(--muted); margin-top:2px; }
+.mix-card.all { grid-column:1/-1; background:linear-gradient(135deg,#1a1a3f,#25153a); border-color:var(--primary); }
+
+/* TODAY CARD */
+.today-card { width:100%; background:var(--card); border:1px solid var(--border);
+  border-radius:var(--r); padding:18px 20px; }
+.today-card h3 { font-size:.72rem; color:var(--muted); text-transform:uppercase;
+  letter-spacing:1.5px; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.today-card h3 span { color:var(--primary); }
+.today-empty { color:var(--muted); font-size:.85rem; text-align:center; padding:8px 0; }
+.today-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.today-stat  { background:var(--surface); border:1px solid var(--border);
+  border-radius:10px; padding:10px 6px; text-align:center; }
+.today-stat .tv { font-size:1.15rem; font-weight:800; }
+.today-stat .tl { font-size:.68rem; color:var(--muted); margin-top:2px; }
+.today-grade-row { display:flex; align-items:center; justify-content:space-between;
+  margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
+.today-grade-badge { font-size:1.6rem; font-weight:900; }
+.today-grade-msg { font-size:.82rem; color:var(--text); }
+.today-sessions-btn { background:none; border:1px solid var(--border); border-radius:20px;
+  padding:5px 12px; font-size:.72rem; color:var(--muted); cursor:pointer; transition:all .15s; }
+.today-sessions-btn:hover { border-color:var(--primary); color:var(--primary); }
+
+/* RECORDS SCREEN */
+.week-bar { width:100%; display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+.day-col { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.day-label { font-size:.65rem; color:var(--muted); }
+.day-dot { width:100%; aspect-ratio:1; border-radius:8px; background:var(--surface);
+  border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+  font-size:.65rem; font-weight:700; color:var(--muted); transition:all .2s; }
+.day-dot.has { background:rgba(124,111,255,.18); border-color:var(--primary); color:var(--primary); }
+.day-dot.today { border-color:var(--gold); color:var(--gold); background:rgba(255,207,64,.1); }
+
+.rec-list { width:100%; display:flex; flex-direction:column; gap:8px; }
+.rec-item { background:var(--card); border:1px solid var(--border); border-radius:var(--r);
+  padding:14px 16px; display:flex; align-items:center; gap:12px; }
+.rec-item .ri-grade { font-size:1.5rem; flex-shrink:0; }
+.rec-item .ri-info { flex:1; }
+.rec-item .ri-info h4 { font-size:.88rem; font-weight:700; color:var(--white); }
+.rec-item .ri-info p  { font-size:.74rem; color:var(--muted); margin-top:2px; }
+.rec-item .ri-score { font-size:1rem; font-weight:800; color:var(--gold); }
+
+/* GRADE MODE SELECT */
+.grade-header { width:100%; display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 0; }
+.grade-big { font-size:1.4rem; font-weight:900; padding:8px 26px; border-radius:30px; }
+.grade-big.mid3  { background:rgba(0,224,160,.12); color:var(--green); border:1.5px solid rgba(0,224,160,.3); }
+.grade-big.high1 { background:rgba(124,111,255,.12); color:var(--primary); border:1.5px solid rgba(124,111,255,.3); }
+.grade-big.high2 { background:rgba(255,171,79,.12); color:var(--orange); border:1.5px solid rgba(255,171,79,.3); }
+.grade-big.high3 { background:rgba(255,77,106,.12); color:var(--red); border:1.5px solid rgba(255,77,106,.3); }
+.grade-header p { font-size:.8rem; color:var(--muted); }
+
+.mode-list { width:100%; display:flex; flex-direction:column; gap:9px; }
+.mode-row { background:var(--card); border:1.5px solid var(--border); border-radius:var(--r);
+  padding:16px 18px; cursor:pointer; transition:all .18s;
+  display:flex; align-items:center; gap:14px; }
+.mode-row:hover { border-color:var(--primary); transform:translateX(3px); box-shadow:0 4px 16px var(--pg); }
+.mode-row .icon { font-size:1.5rem; flex-shrink:0; }
+.mode-row .txt h3 { font-size:.95rem; font-weight:700; color:var(--white); }
+.mode-row .txt p  { font-size:.74rem; color:var(--muted); margin-top:2px; }
+.mode-row .arr { margin-left:auto; color:var(--muted); }
+.mode-row .m-stage { font-size:.7rem; font-weight:700; padding:2px 9px; border-radius:10px;
+  background:rgba(124,111,255,.12); color:var(--primary); border:1px solid rgba(124,111,255,.25); margin-left:auto; }
+.mode-row.all-mode { background:linear-gradient(135deg,#1a1a3f,#25153a); border-color:var(--primary); }
+
+/* QUIZ HUD */
+.hud { width:100%; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.hud-pill { font-size:.78rem; font-weight:700; padding:5px 12px; border-radius:20px; border:1px solid transparent; }
+.hud-stage { color:var(--primary); background:rgba(124,111,255,.12); border-color:rgba(124,111,255,.25); }
+.hud-grade { }
+.hud-grade.mid3  { color:var(--green); background:rgba(0,224,160,.1); border-color:rgba(0,224,160,.25); }
+.hud-grade.high1 { color:var(--primary); background:rgba(124,111,255,.1); border-color:rgba(124,111,255,.25); }
+.hud-grade.high2 { color:var(--orange); background:rgba(255,171,79,.1); border-color:rgba(255,171,79,.25); }
+.hud-grade.high3 { color:var(--red); background:rgba(255,77,106,.1); border-color:rgba(255,77,106,.25); }
+.hud-grade.mixed { color:var(--gold); background:rgba(255,207,64,.1); border-color:rgba(255,207,64,.25); }
+.hud-score { color:var(--gold); background:rgba(255,207,64,.08); border-color:rgba(255,207,64,.2); margin-left:auto; }
+
+.prog-wrap { width:100%; }
+.prog-meta { display:flex; justify-content:space-between; font-size:.75rem; color:var(--muted); margin-bottom:5px; }
+.prog-meta span:last-child { color:var(--green); font-weight:700; }
+.prog-track { width:100%; height:8px; background:var(--surface); border-radius:8px; overflow:hidden; }
+.prog-fill { height:100%; border-radius:8px; background:linear-gradient(90deg,var(--primary),var(--green)); transition:width .35s cubic-bezier(.4,0,.2,1); }
+
+.streak-row { height:26px; width:100%; text-align:center; }
+.streak-chip { display:inline-flex; align-items:center; gap:5px;
+  background:linear-gradient(135deg,var(--gold),var(--orange)); color:#1a0f00;
+  font-size:.8rem; font-weight:800; padding:3px 14px; border-radius:20px;
+  animation:chipPop .2s ease; }
+@keyframes chipPop { from{transform:scale(.75);opacity:0} to{transform:scale(1);opacity:1} }
+
+.q-card { width:100%; background:var(--card); border:1.5px solid var(--border);
+  border-radius:var(--r); padding:30px 26px; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  transition:border-color .2s,box-shadow .2s; min-height:150px; justify-content:center; }
+.q-card.correct { border-color:var(--green); box-shadow:0 0 24px rgba(0,224,160,.15); }
+.q-card.wrong   { border-color:var(--red);   box-shadow:0 0 24px rgba(255,77,106,.15); }
+.q-top { display:flex; align-items:center; gap:8px; justify-content:center; }
+.q-lv-badge { font-size:.66rem; font-weight:700; padding:3px 9px; border-radius:10px; letter-spacing:.5px; }
+.q-lv-badge.mid3  { background:rgba(0,224,160,.12); color:var(--green); border:1px solid rgba(0,224,160,.25); }
+.q-lv-badge.high1 { background:rgba(124,111,255,.12); color:var(--primary); border:1px solid rgba(124,111,255,.25); }
+.q-lv-badge.high2 { background:rgba(255,171,79,.12); color:var(--orange); border:1px solid rgba(255,171,79,.25); }
+.q-lv-badge.high3 { background:rgba(255,77,106,.12); color:var(--red); border:1px solid rgba(255,77,106,.25); }
+.q-lv-badge.idiom { background:rgba(255,107,157,.12); color:var(--sec); border:1px solid rgba(255,107,157,.25); }
+.q-dir { font-size:.72rem; color:var(--muted); }
+.q-text { font-size:1.9rem; font-weight:800; color:var(--white); line-height:1.2; word-break:break-word; }
+.q-feedback { font-size:.84rem; min-height:20px; }
+.q-feedback.ok  { color:var(--green); }
+.q-feedback.err { color:var(--red); }
+
+.input-row { width:100%; display:flex; gap:8px; }
+.answer-input { flex:1; background:var(--card2); border:1.5px solid var(--border);
+  border-radius:12px; padding:14px 18px; font-size:1rem; color:var(--white);
+  outline:none; font-family:inherit; transition:border-color .15s,box-shadow .15s; }
+.answer-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px var(--pg); }
+.answer-input.shake { animation:shake .35s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+.answer-input::placeholder { color:var(--muted); }
+.submit-btn { background:var(--primary); border:none; border-radius:12px;
+  padding:14px 18px; color:#fff; font-size:.92rem; font-weight:700; cursor:pointer; transition:all .15s; flex-shrink:0; }
+.submit-btn:hover { background:#9080ff; transform:translateY(-1px); }
+
+.action-row { width:100%; display:flex; gap:8px; justify-content:flex-end; }
+.sm-btn { background:none; border:1px solid var(--border); border-radius:20px;
+  padding:6px 13px; font-size:.76rem; color:var(--muted); cursor:pointer; transition:all .15s; }
+.sm-btn:hover { border-color:var(--gold); color:var(--gold); }
+.sm-btn.danger:hover { border-color:var(--red); color:var(--red); }
+
+.stat-row { width:100%; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.stat-pill { background:var(--card); border:1px solid var(--border);
+  border-radius:10px; padding:10px 6px; text-align:center; }
+.stat-pill .sv { font-size:1.15rem; font-weight:800; }
+.stat-pill .sl { font-size:.67rem; color:var(--muted); margin-top:2px; }
+.sv.c{color:var(--green);} .sv.w{color:var(--red);} .sv.s{color:var(--gold);} .sv.p{color:var(--primary);}
+
+/* OVERLAY */
+.overlay { position:fixed; inset:0; z-index:100; background:rgba(11,11,24,.92);
+  backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; padding:16px; }
+.overlay.show { display:flex; }
+.ov-card { background:var(--card); border:1.5px solid var(--primary); border-radius:22px;
+  padding:36px 28px; text-align:center; display:flex; flex-direction:column;
+  align-items:center; gap:11px; box-shadow:0 0 60px var(--pg); width:100%; max-width:400px;
+  animation:clearPop .4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes clearPop { from{transform:scale(.6);opacity:0} to{transform:scale(1);opacity:1} }
+.ov-emoji { font-size:3.6rem; }
+.ov-title { font-size:1.6rem; font-weight:900; color:var(--white); }
+.ov-sub   { font-size:.82rem; color:var(--muted); line-height:1.7; }
+.ov-score { font-size:2rem; font-weight:900; color:var(--gold); }
+.ov-rank  { font-size:3rem; font-weight:900; line-height:1; }
+.ov-rank-label { font-size:.78rem; color:var(--muted); margin-top:-4px; }
+.ov-divider { width:100%; height:1px; background:var(--border); }
+.ov-stat-row { width:100%; display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.ov-stat { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 6px; text-align:center; }
+.ov-stat .os { font-size:1.1rem; font-weight:800; }
+.ov-stat .ol { font-size:.68rem; color:var(--muted); margin-top:2px; }
+.ov-btn { border:none; border-radius:12px; padding:13px; font-size:.92rem; font-weight:700;
+  color:#fff; cursor:pointer; transition:all .15s; width:100%; }
+.ov-btn.pri { background:linear-gradient(135deg,var(--primary),#5a50d0); box-shadow:0 4px 16px var(--pg); }
+.ov-btn.pri:hover { transform:translateY(-2px); box-shadow:0 8px 24px var(--pg); }
+.ov-btn.sec2 { background:var(--card2); border:1px solid var(--border); color:var(--muted); }
+.ov-btn.sec2:hover { border-color:var(--primary); color:var(--white); }
+
+/* FLOAT PTS */
+.float-pt { position:fixed; pointer-events:none; z-index:200;
+  font-size:1.3rem; font-weight:900; animation:floatUp .85s ease forwards; }
+@keyframes floatUp { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-70px) scale(1.4)} }
+
+@media(max-width:500px){
+  .grade-grid{grid-template-columns:1fr 1fr;} .mix-strip{grid-template-columns:1fr;}
+  .mix-card.all{grid-column:auto;} .q-text{font-size:1.5rem;} .logo h1{font-size:2.2rem;}
+  .stat-row{grid-template-columns:1fr 1fr;} .today-stats{grid-template-columns:1fr 1fr;}
+  .ov-stat-row{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="app">
+
+<!-- ══ HOME ══ -->
+<div class="screen active" id="sc-home">
+  <div class="logo">
+    <h1>WORD QUEST</h1>
+    <p>영어 단어 · 숙어 타이핑 퀴즈 — 중3 ~ 고3</p>
+  </div>
+
+  <div class="sec-lbl">학년별 학습</div>
+  <div class="grade-grid" id="grade-grid"></div>
+
+  <div class="sec-lbl">종합 모드</div>
+  <div class="mix-strip">
+    <div class="mix-card" onclick="startGame('en-ko',null)">
+      <div class="icon">🔤</div><div><h3>전체 영어→한글</h3><p>중3~고3 전체 단어</p></div>
+    </div>
+    <div class="mix-card" onclick="startGame('ko-en',null)">
+      <div class="icon">🇰🇷</div><div><h3>전체 한글→영어</h3><p>중3~고3 전체 단어</p></div>
+    </div>
+    <div class="mix-card" onclick="startGame('idiom-en-ko',null)">
+      <div class="icon">💬</div><div><h3>숙어 영어→한글</h3><p>전체 숙어 45개</p></div>
+    </div>
+    <div class="mix-card" onclick="startGame('idiom-ko-en',null)">
+      <div class="icon">🗣️</div><div><h3>숙어 한글→영어</h3><p>전체 숙어 45개</p></div>
+    </div>
+    <div class="mix-card all" onclick="startGame('all',null)">
+      <div class="icon">⚡</div><div><h3>전체 종합 모드</h3><p>단어+숙어 · 영한+한영 완전 혼합 · 무제한 랜덤</p></div>
+    </div>
+  </div>
+
+  <div class="today-card" id="today-card">
+    <h3>📅 오늘의 학습 기록 <span id="today-date-lbl"></span></h3>
+    <div id="today-body"></div>
+  </div>
+
+  <button class="sm-btn" style="align-self:flex-end" onclick="goRecords()">📊 전체 기록 보기</button>
+</div>
+
+<!-- ══ GRADE MODE SELECT ══ -->
+<div class="screen" id="sc-grade">
+  <div class="nav-bar">
+    <button class="nav-back" onclick="goHome()">← 홈</button>
+    <div class="nav-t" id="grade-nav-t"></div>
+    <div class="nav-sp"></div>
+  </div>
+  <div class="grade-header">
+    <div class="grade-big" id="grade-big-badge"></div>
+    <p id="grade-sub-p"></p>
+  </div>
+  <div class="sec-lbl">학습 모드 선택</div>
+  <div class="mode-list" id="mode-list"></div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div class="screen" id="sc-quiz">
+  <div class="nav-bar">
+    <button class="nav-back" onclick="endSession(false)">← 홈</button>
+    <div class="nav-t" id="quiz-nav-t"></div>
+    <div class="nav-sp"></div>
+  </div>
+  <div class="hud">
+    <div class="hud-pill hud-stage" id="hud-stage">STAGE 1</div>
+    <div class="hud-pill hud-grade" id="hud-grade"></div>
+    <div class="hud-pill hud-score">⭐ <span id="hud-score">0</span></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-meta"><span id="prog-l"></span><span id="prog-r"></span></div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div class="streak-row" id="streak-row"></div>
+  <div class="q-card" id="q-card">
+    <div class="q-top">
+      <span class="q-lv-badge" id="q-lv-badge">중3</span>
+      <span class="q-dir" id="q-dir">영어 → 한글</span>
+    </div>
+    <div class="q-text" id="q-text">—</div>
+    <div class="q-feedback" id="q-feedback"></div>
+  </div>
+  <div class="input-row">
+    <input class="answer-input" id="answer-input" type="text"
+      placeholder="정답을 입력하고 Enter" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="submit-btn" onclick="submitAnswer()">확인</button>
+  </div>
+  <div class="action-row">
+    <button class="sm-btn" id="hint-btn" onclick="useHint()">💡 힌트 (−50점)</button>
+    <button class="sm-btn danger" onclick="skipQ()">건너뛰기</button>
+  </div>
+  <div class="stat-row">
+    <div class="stat-pill"><div class="sv c" id="s-c">0</div><div class="sl">정답</div></div>
+    <div class="stat-pill"><div class="sv w" id="s-w">0</div><div class="sl">오답</div></div>
+    <div class="stat-pill"><div class="sv s" id="s-s">0</div><div class="sl">최대연속</div></div>
+    <div class="stat-pill"><div class="sv p" id="s-p">1×</div><div class="sl">배율</div></div>
+  </div>
+</div>
+
+<!-- ══ RECORDS ══ -->
+<div class="screen" id="sc-records">
+  <div class="nav-bar">
+    <button class="nav-back" onclick="goHome()">← 홈</button>
+    <div class="nav-t">학습 기록</div>
+    <div class="nav-sp"></div>
+  </div>
+  <div class="week-bar" id="week-bar"></div>
+  <div class="sec-lbl" id="rec-date-lbl"></div>
+  <div class="rec-list" id="rec-list"></div>
+</div>
+
+<!-- ══ STAGE CLEAR OVERLAY ══ -->
+<div class="overlay" id="ov-clear">
+  <div class="ov-card">
+    <div class="ov-emoji" id="ov-emoji">🎉</div>
+    <div class="ov-title" id="ov-title">STAGE 1 클리어!</div>
+    <div class="ov-rank"  id="ov-rank">A</div>
+    <div class="ov-rank-label" id="ov-rank-label">랭크</div>
+    <div class="ov-sub"   id="ov-sub"></div>
+    <div class="ov-score" id="ov-score"></div>
+    <div class="ov-divider"></div>
+    <div class="ov-stat-row">
+      <div class="ov-stat"><div class="os" style="color:var(--green)" id="ov-sc">0</div><div class="ol">정답</div></div>
+      <div class="ov-stat"><div class="os" style="color:var(--red)"   id="ov-sw">0</div><div class="ol">오답</div></div>
+      <div class="ov-stat"><div class="os" style="color:var(--gold)"  id="ov-ss">0</div><div class="ol">최대연속</div></div>
+    </div>
+    <button class="ov-btn pri" id="ov-next-btn">다음 스테이지 →</button>
+    <button class="ov-btn sec2" onclick="replayStage()">같은 스테이지 다시</button>
+    <button class="ov-btn sec2" onclick="endSession(true)">홈으로</button>
+  </div>
+</div>
+
+<!-- ══ SESSION RESULT OVERLAY (mid-session exit) ══ -->
+<div class="overlay" id="ov-result">
+  <div class="ov-card">
+    <div class="ov-emoji" id="res-emoji">📊</div>
+    <div class="ov-title">세션 종료</div>
+    <div class="ov-rank"  id="res-rank">B</div>
+    <div class="ov-rank-label" id="res-rank-label">랭크</div>
+    <div class="ov-sub"   id="res-sub"></div>
+    <div class="ov-score" id="res-score"></div>
+    <div class="ov-divider"></div>
+    <div class="ov-stat-row">
+      <div class="ov-stat"><div class="os" style="color:var(--green)" id="res-sc">0</div><div class="ol">정답</div></div>
+      <div class="ov-stat"><div class="os" style="color:var(--red)"   id="res-sw">0</div><div class="ol">오답</div></div>
+      <div class="ov-stat"><div class="os" style="color:var(--gold)"  id="res-ss">0</div><div class="ol">최대연속</div></div>
+    </div>
+    <button class="ov-btn pri" onclick="confirmGoHome()">기록 저장 후 홈으로</button>
+    <button class="ov-btn sec2" onclick="closeResultOv()">계속 학습하기</button>
+  </div>
+</div>
+
+</div>
+<script>
+// ═══════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════
+const WORDS = [
+  {en:"absence",    ko:"결석, 부재",         lv:"mid3"},{en:"achieve",    ko:"이루다, 달성하다",   lv:"mid3"},
+  {en:"admit",      ko:"인정하다, 허용하다",  lv:"mid3"},{en:"affect",     ko:"영향을 미치다",      lv:"mid3"},
+  {en:"allow",      ko:"허락하다",            lv:"mid3"},{en:"ancient",    ko:"고대의",             lv:"mid3"},
+  {en:"announce",   ko:"발표하다, 알리다",    lv:"mid3"},{en:"appear",     ko:"나타나다",           lv:"mid3"},
+  {en:"attitude",   ko:"태도, 자세",          lv:"mid3"},{en:"avoid",      ko:"피하다",             lv:"mid3"},
+  {en:"blame",      ko:"비난하다, 탓하다",    lv:"mid3"},{en:"brave",      ko:"용감한",             lv:"mid3"},
+  {en:"calm",       ko:"침착한, 고요한",      lv:"mid3"},{en:"cause",      ko:"원인, 야기하다",     lv:"mid3"},
+  {en:"certain",    ko:"확실한, 특정한",      lv:"mid3"},{en:"choice",     ko:"선택",               lv:"mid3"},
+  {en:"comfort",    ko:"위안, 편안함",        lv:"mid3"},{en:"common",     ko:"흔한, 공통의",       lv:"mid3"},
+  {en:"consider",   ko:"고려하다",            lv:"mid3"},{en:"contain",    ko:"포함하다, 담다",     lv:"mid3"},
+  {en:"continue",   ko:"계속하다",            lv:"mid3"},{en:"courage",    ko:"용기",               lv:"mid3"},
+  {en:"create",     ko:"만들다, 창조하다",    lv:"mid3"},{en:"curious",    ko:"호기심 있는",        lv:"mid3"},
+  {en:"damage",     ko:"손해, 손상시키다",    lv:"mid3"},{en:"decide",     ko:"결정하다",           lv:"mid3"},
+  {en:"discover",   ko:"발견하다",            lv:"mid3"},{en:"effort",     ko:"노력",               lv:"mid3"},
+  {en:"environment",ko:"환경",               lv:"mid3"},{en:"express",    ko:"표현하다",           lv:"mid3"},
+  {en:"abandon",    ko:"버리다, 포기하다",    lv:"high1"},{en:"abundant",   ko:"풍부한",             lv:"high1"},
+  {en:"acknowledge",ko:"인정하다, 감사하다",  lv:"high1"},{en:"adapt",      ko:"적응하다, 개조하다", lv:"high1"},
+  {en:"adequate",   ko:"적절한, 충분한",      lv:"high1"},{en:"alter",      ko:"바꾸다, 변경하다",   lv:"high1"},
+  {en:"ambiguous",  ko:"모호한",              lv:"high1"},{en:"analyze",    ko:"분석하다",           lv:"high1"},
+  {en:"anxious",    ko:"불안한, 열망하는",    lv:"high1"},{en:"assume",     ko:"가정하다, 추정하다", lv:"high1"},
+  {en:"aware",      ko:"인식하는, 알고 있는", lv:"high1"},{en:"beneficial", ko:"이로운, 유익한",     lv:"high1"},
+  {en:"burden",     ko:"짐, 부담",            lv:"high1"},{en:"capture",    ko:"포착하다, 잡다",     lv:"high1"},
+  {en:"classify",   ko:"분류하다",            lv:"high1"},{en:"compete",    ko:"경쟁하다",           lv:"high1"},
+  {en:"complicated",ko:"복잡한",              lv:"high1"},{en:"concentrate",ko:"집중하다",           lv:"high1"},
+  {en:"conflict",   ko:"충돌, 갈등",          lv:"high1"},{en:"consequence",ko:"결과, 영향",         lv:"high1"},
+  {en:"constant",   ko:"지속적인, 일정한",    lv:"high1"},{en:"context",    ko:"문맥, 상황",         lv:"high1"},
+  {en:"convince",   ko:"설득하다",            lv:"high1"},{en:"cooperate",  ko:"협력하다",           lv:"high1"},
+  {en:"crucial",    ko:"결정적인, 중요한",    lv:"high1"},{en:"demonstrate",ko:"시연하다, 증명하다", lv:"high1"},
+  {en:"depend",     ko:"의존하다",            lv:"high1"},{en:"determine",  ko:"결정하다, 알아내다", lv:"high1"},
+  {en:"aesthetic",  ko:"심미적인, 미적인",    lv:"high2"},{en:"advocate",   ko:"옹호하다, 지지자",   lv:"high2"},
+  {en:"allocate",   ko:"할당하다",            lv:"high2"},{en:"anticipate", ko:"예상하다, 기대하다", lv:"high2"},
+  {en:"apparent",   ko:"명백한, 겉보기의",    lv:"high2"},{en:"appreciate", ko:"감사하다, 진가를 알다",lv:"high2"},
+  {en:"arbitrary",  ko:"임의적인, 독단적인",  lv:"high2"},{en:"aspect",     ko:"측면, 양상",         lv:"high2"},
+  {en:"authentic",  ko:"진짜의, 진정성 있는", lv:"high2"},{en:"coherent",   ko:"일관된, 논리적인",   lv:"high2"},
+  {en:"collaborate",ko:"협력하다, 공동 작업하다",lv:"high2"},{en:"comprehensive",ko:"포괄적인, 종합적인",lv:"high2"},
+  {en:"concrete",   ko:"구체적인, 콘크리트",  lv:"high2"},{en:"contradict", ko:"모순되다, 반박하다", lv:"high2"},
+  {en:"controversy",ko:"논란, 논쟁",          lv:"high2"},{en:"credible",   ko:"믿을 수 있는",       lv:"high2"},
+  {en:"deduce",     ko:"추론하다, 연역하다",  lv:"high2"},{en:"deteriorate",ko:"악화되다",           lv:"high2"},
+  {en:"devote",     ko:"헌신하다, 바치다",    lv:"high2"},{en:"diminish",   ko:"줄이다, 약화되다",   lv:"high2"},
+  {en:"distinguish",ko:"구별하다",            lv:"high2"},{en:"diverse",    ko:"다양한",             lv:"high2"},
+  {en:"dominate",   ko:"지배하다, 압도하다",  lv:"high2"},{en:"elaborate",  ko:"정교한, 자세히 설명하다",lv:"high2"},
+  {en:"emphasize",  ko:"강조하다",            lv:"high2"},{en:"evolve",     ko:"진화하다, 발전하다", lv:"high2"},
+  {en:"abolish",    ko:"폐지하다",            lv:"high3"},{en:"abstain",    ko:"자제하다, 기권하다", lv:"high3"},
+  {en:"accumulate", ko:"축적하다",            lv:"high3"},{en:"alleviate",  ko:"완화하다, 경감하다", lv:"high3"},
+  {en:"ambivalent", ko:"상반된 감정의",       lv:"high3"},{en:"analogous",  ko:"유사한, 비슷한",     lv:"high3"},
+  {en:"benevolent", ko:"자비로운, 친절한",    lv:"high3"},{en:"catastrophic",ko:"재앙적인",          lv:"high3"},
+  {en:"circumvent", ko:"우회하다, 회피하다",  lv:"high3"},{en:"coerce",     ko:"강요하다",           lv:"high3"},
+  {en:"compelling", ko:"강렬한, 설득력 있는", lv:"high3"},{en:"confront",   ko:"맞서다, 직면하다",   lv:"high3"},
+  {en:"contemporary",ko:"현대의, 동시대인",   lv:"high3"},{en:"contempt",   ko:"경멸, 무시",         lv:"high3"},
+  {en:"detrimental",ko:"해로운",              lv:"high3"},{en:"diligent",   ko:"부지런한, 근면한",   lv:"high3"},
+  {en:"disparity",  ko:"불균형, 차이",        lv:"high3"},{en:"eloquent",   ko:"웅변적인, 유창한",   lv:"high3"},
+  {en:"empirical",  ko:"경험적인, 실증적인",  lv:"high3"},{en:"endeavor",   ko:"노력하다, 시도",     lv:"high3"},
+  {en:"exploit",    ko:"착취하다, 공적",      lv:"high3"},{en:"explicit",   ko:"명시적인, 명백한",   lv:"high3"},
+  {en:"fluctuate",  ko:"변동하다, 오르내리다",lv:"high3"},{en:"formidable", ko:"무서운, 만만치 않은",lv:"high3"},
+  {en:"fragile",    ko:"깨지기 쉬운, 취약한", lv:"high3"},{en:"genuine",    ko:"진짜의, 진실한",     lv:"high3"},
+  {en:"hierarchy",  ko:"위계, 계층 구조",     lv:"high3"},{en:"hypothetical",ko:"가상의, 가정의",    lv:"high3"},
+  {en:"inevitable", ko:"불가피한",            lv:"high3"},{en:"inherent",   ko:"타고난, 내재적인",   lv:"high3"},
+  {en:"manipulate", ko:"조작하다, 다루다",    lv:"high3"},{en:"obscure",    ko:"모호한, 잘 알려지지 않은",lv:"high3"},
+  {en:"paradigm",   ko:"패러다임, 전형적 예", lv:"high3"},{en:"perpetual",  ko:"영속적인, 끊임없는", lv:"high3"},
+  {en:"prevalent",  ko:"만연한, 흔한",        lv:"high3"},{en:"profound",   ko:"심오한, 깊은",       lv:"high3"},
+  {en:"resilient",  ko:"회복력 있는",         lv:"high3"},{en:"scrutinize", ko:"면밀히 조사하다",    lv:"high3"},
+  {en:"sophisticated",ko:"정교한, 세련된",    lv:"high3"},{en:"substantial",ko:"상당한, 실질적인",   lv:"high3"},
+  {en:"suppress",   ko:"억압하다, 억제하다",  lv:"high3"},{en:"susceptible",ko:"영향받기 쉬운, 취약한",lv:"high3"},
+  {en:"tentative",  ko:"잠정적인, 망설이는",  lv:"high3"},{en:"transparent",ko:"투명한, 명백한",     lv:"high3"},
+  {en:"trivial",    ko:"사소한, 하찮은",      lv:"high3"},{en:"undermine",  ko:"약화시키다, 훼손하다",lv:"high3"},
+  {en:"validate",   ko:"검증하다, 확인하다",  lv:"high3"},{en:"versatile",  ko:"다재다능한, 다목적의",lv:"high3"},
+  {en:"vivid",      ko:"생생한, 선명한",      lv:"high3"},{en:"vulnerable", ko:"취약한, 상처받기 쉬운",lv:"high3"},
+  {en:"withstand",  ko:"견디다, 저항하다",    lv:"high3"},
+];
+const IDIOMS = [
+  {en:"break a leg",ko:"행운을 빌다",lv:"idiom"},{en:"hit the nail on the head",ko:"정확히 맞추다, 핵심을 짚다",lv:"idiom"},
+  {en:"bite the bullet",ko:"이를 악물고 견디다",lv:"idiom"},{en:"once in a blue moon",ko:"아주 드물게",lv:"idiom"},
+  {en:"under the weather",ko:"몸이 좋지 않은",lv:"idiom"},{en:"piece of cake",ko:"매우 쉬운 일",lv:"idiom"},
+  {en:"cost an arm and a leg",ko:"매우 비싸다",lv:"idiom"},{en:"let the cat out of the bag",ko:"비밀을 누설하다",lv:"idiom"},
+  {en:"burn the midnight oil",ko:"밤새워 공부하다",lv:"idiom"},{en:"hit the books",ko:"공부하다",lv:"idiom"},
+  {en:"on the fence",ko:"결정을 못 내리고 있는",lv:"idiom"},{en:"spill the beans",ko:"비밀을 털어놓다",lv:"idiom"},
+  {en:"beat around the bush",ko:"핵심을 피해서 말하다",lv:"idiom"},{en:"get the hang of",ko:"요령을 익히다",lv:"idiom"},
+  {en:"turn a blind eye",ko:"못 본 척하다, 외면하다",lv:"idiom"},{en:"hit the road",ko:"출발하다, 길을 나서다",lv:"idiom"},
+  {en:"keep an eye on",ko:"주시하다, 감시하다",lv:"idiom"},{en:"go the extra mile",ko:"특별히 더 노력하다",lv:"idiom"},
+  {en:"break the ice",ko:"어색함을 없애다",lv:"idiom"},{en:"pull someone's leg",ko:"놀리다, 농담하다",lv:"idiom"},
+  {en:"hit the sack",ko:"자러 가다",lv:"idiom"},{en:"add fuel to the fire",ko:"불에 기름을 붓다, 악화시키다",lv:"idiom"},
+  {en:"a blessing in disguise",ko:"전화위복",lv:"idiom"},{en:"at the drop of a hat",ko:"즉시, 지체 없이",lv:"idiom"},
+  {en:"back to the drawing board",ko:"처음부터 다시 시작하다",lv:"idiom"},{en:"bite the dust",ko:"실패하다, 쓰러지다",lv:"idiom"},
+  {en:"call it a day",ko:"오늘은 여기서 마치다",lv:"idiom"},{en:"cut corners",ko:"편법을 쓰다",lv:"idiom"},
+  {en:"every cloud has a silver lining",ko:"모든 불행에는 희망이 있다",lv:"idiom"},{en:"face the music",ko:"결과에 책임을 지다",lv:"idiom"},
+  {en:"get cold feet",ko:"두려워서 겁먹다",lv:"idiom"},{en:"hit the ceiling",ko:"몹시 화를 내다",lv:"idiom"},
+  {en:"in hot water",ko:"곤경에 처한",lv:"idiom"},{en:"jump on the bandwagon",ko:"유행에 편승하다",lv:"idiom"},
+  {en:"kill two birds with one stone",ko:"일석이조",lv:"idiom"},{en:"leave no stone unturned",ko:"모든 수단을 동원하다",lv:"idiom"},
+  {en:"miss the boat",ko:"기회를 놓치다",lv:"idiom"},{en:"not my cup of tea",ko:"내 취향이 아니다",lv:"idiom"},
+  {en:"pass the buck",ko:"책임을 전가하다",lv:"idiom"},{en:"read between the lines",ko:"행간의 의미를 읽다",lv:"idiom"},
+  {en:"see eye to eye",ko:"의견이 일치하다",lv:"idiom"},{en:"take with a grain of salt",ko:"약간 의심하며 받아들이다",lv:"idiom"},
+  {en:"the last straw",ko:"인내의 한계를 넘게 하는 것",lv:"idiom"},{en:"throw in the towel",ko:"포기하다, 항복하다",lv:"idiom"},
+];
+
+// ═══════════════════════════════════════════
+//  CONSTANTS
+// ═══════════════════════════════════════════
+const STAGE_GOALS = [8,12,16,20,25,30,36,42,48,55]; // 스테이지 1~10 목표 정답 수
+const MAX_STAGE = 10;
+
+const GRADE_INFO = {
+  mid3: {name:"중 3",color:"mid3",desc:"기초 단어 30개"},
+  high1:{name:"고 1",color:"high1",desc:"중급 단어 30개"},
+  high2:{name:"고 2",color:"high2",desc:"상급 단어 30개"},
+  high3:{name:"고 3",color:"high3",desc:"수능 단어 50개"},
+};
+const LV_LABEL = {mid3:"중3",high1:"고1",high2:"고2",high3:"고3",idiom:"숙어"};
+const LV_CLASS = {mid3:"mid3",high1:"high1",high2:"high2",high3:"high3",idiom:"idiom"};
+const MODE_LABEL = {'en-ko':'영어→한글','ko-en':'한글→영어','idiom-en-ko':'숙어 영→한','idiom-ko-en':'숙어 한→영','all':'전체 종합'};
+
+function stageGoal(idx){ return STAGE_GOALS[Math.min(idx,MAX_STAGE-1)]; }
+function stageLabel(idx){ return `STAGE ${idx+1}`; }
+function stageTier(idx){
+  if(idx<=2) return '초급';
+  if(idx<=5) return '중급';
+  if(idx<=8) return '고급';
+  return '마스터';
+}
+
+// ═══════════════════════════════════════════
+//  RANK SYSTEM
+// ═══════════════════════════════════════════
+function calcRank(correct,total){
+  if(!total) return {rank:'—',emoji:'📊',msg:'데이터 없음'};
+  const acc = correct/total;
+  if(acc>=.95) return {rank:'S',emoji:'🏆',msg:'완벽한 실력이에요!',color:'#ffcf40'};
+  if(acc>=.85) return {rank:'A',emoji:'🥇',msg:'훌륭해요!',color:'#c0c0ff'};
+  if(acc>=.70) return {rank:'B',emoji:'🥈',msg:'잘하고 있어요!',color:'#00e0a0'};
+  if(acc>=.55) return {rank:'C',emoji:'🥉',msg:'조금 더 연습해봐요',color:'#ffab4f'};
+  return {rank:'D',emoji:'📚',msg:'꾸준히 복습이 필요해요',color:'#ff4d6a'};
+}
+
+// ═══════════════════════════════════════════
+//  LOCALSTORAGE HELPERS
+// ═══════════════════════════════════════════
+function todayKey(){ return 'wq_day_'+ new Date().toISOString().slice(0,10); }
+function dateKey(d){ return 'wq_day_'+d; }
+
+function loadDay(key){
+  try{ return JSON.parse(localStorage.getItem(key)||'null'); }catch(e){ return null; }
+}
+function saveDay(key,data){ localStorage.setItem(key,JSON.stringify(data)); }
+
+function appendSession(sess){
+  const key = todayKey();
+  let d = loadDay(key) || {sessions:[],totalScore:0,totalCorrect:0,totalWrong:0,bestStreak:0};
+  d.sessions.push(sess);
+  d.totalScore    += sess.score;
+  d.totalCorrect  += sess.correct;
+  d.totalWrong    += sess.wrong;
+  d.bestStreak     = Math.max(d.bestStreak, sess.maxStreak);
+  saveDay(key,d);
+}
+
+// Stage progress per (grade,mode)
+function stageKey(g,m){ return 'wq_stg_'+(g||'null')+'_'+m; }
+function loadStageIdx(g,m){ return parseInt(localStorage.getItem(stageKey(g,m))||'0'); }
+function saveStageIdx(g,m,idx){ localStorage.setItem(stageKey(g,m),idx); }
+
+// ═══════════════════════════════════════════
+//  BUILD HOME GRADE CARDS
+// ═══════════════════════════════════════════
+function buildGradeGrid(){
+  const grid = document.getElementById('grade-grid');
+  grid.innerHTML = '';
+  const grades = ['mid3','high1','high2','high3'];
+  const icons  = ['📗','📘','📙','📕'];
+  grades.forEach((g,i)=>{
+    const info = GRADE_INFO[g];
+    const card = document.createElement('div');
+    card.className = 'grade-card '+g;
+    const bestStg = loadStageIdx(g,'all'); // show overall stage for display
+    card.innerHTML = `<div class="g-icon">${icons[i]}</div><h3>${info.name}</h3><p>${info.desc}</p>
+      <span class="g-stage" style="background:rgba(124,111,255,.12);color:var(--primary)">STAGE ${bestStg+1}</span>`;
+    card.onclick = ()=>goGrade(g);
+    grid.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════
+//  TODAY CARD
+// ═══════════════════════════════════════════
+function renderTodayCard(){
+  const today = new Date();
+  const fmt = `${today.getMonth()+1}월 ${today.getDate()}일`;
+  document.getElementById('today-date-lbl').textContent = fmt;
+
+  const d = loadDay(todayKey());
+  const body = document.getElementById('today-body');
+  if(!d || !d.sessions.length){
+    body.innerHTML = '<div class="today-empty">아직 오늘 학습 기록이 없어요. 지금 시작해보세요!</div>';
+    return;
+  }
+  const total = d.totalCorrect + d.totalWrong;
+  const acc = total ? Math.round(d.totalCorrect/total*100) : 0;
+  const r = calcRank(d.totalCorrect, total);
+  body.innerHTML = `
+    <div class="today-stats">
+      <div class="today-stat"><div class="tv" style="color:var(--gold)">${d.totalScore.toLocaleString()}</div><div class="tl">총점</div></div>
+      <div class="today-stat"><div class="tv" style="color:var(--green)">${d.totalCorrect}</div><div class="tl">정답</div></div>
+      <div class="today-stat"><div class="tv" style="color:var(--red)">${d.totalWrong}</div><div class="tl">오답</div></div>
+      <div class="today-stat"><div class="tv" style="color:var(--primary)">${acc}%</div><div class="tl">정확도</div></div>
+    </div>
+    <div class="today-grade-row">
+      <div>
+        <span class="today-grade-badge" style="color:${r.color}">${r.rank}</span>
+        <span style="color:var(--muted);font-size:.7rem;margin-left:6px">최고연속 ${d.bestStreak}회 · ${d.sessions.length}세션</span>
+      </div>
+      <div class="today-grade-msg">${r.msg}</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  RECORDS SCREEN
+// ═══════════════════════════════════════════
+function goRecords(){
+  renderRecords();
+  showScreen('sc-records');
+}
+function renderRecords(){
+  // week bar
+  const wb = document.getElementById('week-bar');
+  wb.innerHTML = '';
+  const days = ['일','월','화','수','목','금','토'];
+  const todayStr = new Date().toISOString().slice(0,10);
+  for(let i=6;i>=0;i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const ds = d.toISOString().slice(0,10);
+    const rec = loadDay(dateKey(ds));
+    const col = document.createElement('div');
+    col.className = 'day-col';
+    const isToday = ds===todayStr;
+    const hasRec  = rec && rec.sessions && rec.sessions.length>0;
+    col.innerHTML = `<div class="day-label">${days[d.getDay()]}</div>
+      <div class="day-dot${hasRec?' has':''}${isToday?' today':''}">${hasRec?rec.sessions.length:'·'}</div>`;
+    wb.appendChild(col);
+  }
+
+  // sessions for today
+  const d = loadDay(todayKey());
+  document.getElementById('rec-date-lbl').textContent = '오늘의 세션';
+  const list = document.getElementById('rec-list');
+  list.innerHTML = '';
+  if(!d || !d.sessions.length){
+    list.innerHTML = '<div style="color:var(--muted);font-size:.85rem;text-align:center;padding:12px">오늘 기록이 없어요</div>';
+    return;
+  }
+  [...d.sessions].reverse().forEach((s,i)=>{
+    const total = s.correct+s.wrong;
+    const acc = total?Math.round(s.correct/total*100):0;
+    const r = calcRank(s.correct,total);
+    const gradeStr = s.grade ? GRADE_INFO[s.grade].name : '종합';
+    const modeStr  = MODE_LABEL[s.mode]||s.mode;
+    const stgStr   = s.stageClear ? `STAGE ${s.stageClear} 클리어` : `STAGE ${s.stageAt}`;
+    const li = document.createElement('div');
+    li.className = 'rec-item';
+    li.innerHTML = `
+      <div class="ri-grade">${r.emoji}</div>
+      <div class="ri-info">
+        <h4>${gradeStr} · ${modeStr}</h4>
+        <p>정답 ${s.correct} / 오답 ${s.wrong} · 정확도 ${acc}% · 연속 최고 ${s.maxStreak} · ${stgStr}</p>
+      </div>
+      <div class="ri-score">${s.score.toLocaleString()}</div>`;
+    list.appendChild(li);
+  });
+}
+
+// ═══════════════════════════════════════════
+//  GRADE SELECT SCREEN
+// ═══════════════════════════════════════════
+let selGrade = null;
+
+function goGrade(g){
+  selGrade = g;
+  const info = GRADE_INFO[g];
+  document.getElementById('grade-nav-t').textContent = info.name;
+  const badge = document.getElementById('grade-big-badge');
+  badge.textContent = info.name; badge.className = 'grade-big '+g;
+  document.getElementById('grade-sub-p').textContent = info.desc+' + 숙어 45개 · 무제한 랜덤';
+
+  const ml = document.getElementById('mode-list');
+  ml.innerHTML = '';
+  const modes = [
+    {m:'en-ko',    icon:'🔤',h:'영어 → 한글',p:'영어 단어를 보고 한글 뜻을 타이핑'},
+    {m:'ko-en',    icon:'🇰🇷',h:'한글 → 영어',p:'한글 뜻을 보고 영어 단어를 타이핑'},
+    {m:'idiom-en-ko',icon:'💬',h:'숙어 영어 → 한글',p:'영어 숙어를 보고 한글 뜻을 타이핑'},
+    {m:'idiom-ko-en',icon:'🗣️',h:'숙어 한글 → 영어',p:'한글 뜻을 보고 영어 숙어를 타이핑'},
+    {m:'all',      icon:'⚡',h:'학년 전체 종합',p:'단어+숙어 · 영한+한영 완전 혼합'},
+  ];
+  modes.forEach(({m,icon,h,p})=>{
+    const si = loadStageIdx(g,m);
+    const row = document.createElement('div');
+    row.className = 'mode-row'+(m==='all'?' all-mode':'');
+    row.innerHTML = `<div class="icon">${icon}</div>
+      <div class="txt"><h3>${h}</h3><p>${p}</p></div>
+      <div class="m-stage">STAGE ${si+1}</div>`;
+    row.onclick = ()=>startGame(m,g);
+    ml.appendChild(row);
+  });
+  showScreen('sc-grade');
+}
+
+// ═══════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════
+let G = {};
+function freshG(mode,grade){
+  const si = loadStageIdx(grade,mode);
+  return {
+    mode, grade,
+    stageIdx: si,
+    pool: [],
+    current: null,
+    score:0, stageScore:0,
+    streak:0, maxStreak:0,
+    totalCorrect:0, totalWrong:0,
+    stageCorrect:0, stageMistakes:0,
+    sessionStart: Date.now(),
+    hintUsed:false, waiting:false,
+  };
+}
+
+// ═══════════════════════════════════════════
+//  POOL — UNLIMITED RANDOM
+// ═══════════════════════════════════════════
+function shuffle(a){ const r=[...a]; for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];} return r; }
+
+function buildPool(){
+  const {mode,grade} = G;
+  let items=[];
+  const addW=(dir)=>{ WORDS.filter(w=>!grade||w.lv===grade).forEach(w=>items.push({...w,dir})); };
+  const addI=(dir)=>{ IDIOMS.forEach(w=>items.push({...w,dir})); };
+  if(mode==='en-ko')       addW('en-ko');
+  else if(mode==='ko-en')  addW('ko-en');
+  else if(mode==='idiom-en-ko') addI('en-ko');
+  else if(mode==='idiom-ko-en') addI('ko-en');
+  else { addW('en-ko'); addW('ko-en'); addI('en-ko'); addI('ko-en'); }
+  return shuffle(items);
+}
+
+function pickNext(){
+  if(!G.pool.length) G.pool = buildPool(); // 무제한: 소진되면 재셔플
+  G.current = G.pool.pop();
+  G.hintUsed = false;
+}
+
+function getMult(){
+  if(G.streak>=10) return 4;
+  if(G.streak>=7)  return 3;
+  if(G.streak>=5)  return 2;
+  if(G.streak>=3)  return 1.5;
+  return 1;
+}
+
+// ═══════════════════════════════════════════
+//  ANSWER CHECK
+// ═══════════════════════════════════════════
+function nKo(s){ return s.replace(/[\s~!@#$%^&*()\-_+=\[\]{};:'",.<>\/?\\|]/g,'').toLowerCase(); }
+function nEn(s){ return s.trim().toLowerCase().replace(/\s+/g,' '); }
+function checkAns(inp,item){
+  const r=inp.trim(); if(!r) return false;
+  if(item.dir==='en-ko'){
+    const n=nKo(r);
+    return item.ko.split(',').map(p=>nKo(p)).some(p=>p===n||(p.includes(n)&&n.length>=2));
+  }
+  return nEn(r)===nEn(item.en);
+}
+
+// ═══════════════════════════════════════════
+//  START GAME
+// ═══════════════════════════════════════════
+function startGame(mode,grade){
+  G = freshG(mode,grade);
+  G.pool = buildPool();
+  const gradeStr = grade ? GRADE_INFO[grade].name : '종합';
+  document.getElementById('quiz-nav-t').textContent = `${gradeStr} · ${MODE_LABEL[mode]}`;
+  showScreen('sc-quiz');
+  renderQ();
+}
+
+// ═══════════════════════════════════════════
+//  RENDER QUESTION
+// ═══════════════════════════════════════════
+function renderQ(){
+  G.waiting = false;
+  pickNext();
+  const item = G.current;
+  const goal = stageGoal(G.stageIdx);
+  const tier = stageTier(G.stageIdx);
+
+  document.getElementById('hud-stage').textContent = `${stageLabel(G.stageIdx)} · ${tier}`;
+  document.getElementById('hud-score').textContent = G.score.toLocaleString();
+
+  const hg = document.getElementById('hud-grade');
+  if(G.grade){ hg.textContent=GRADE_INFO[G.grade].name; hg.className='hud-pill hud-grade '+G.grade; }
+  else { hg.textContent=MODE_LABEL[G.mode]; hg.className='hud-pill hud-grade mixed'; }
+
+  const pct = Math.min(100,(G.stageCorrect/goal)*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-l').textContent=`${stageLabel(G.stageIdx)} — 목표 ${goal}개`;
+  document.getElementById('prog-r').textContent=`${G.stageCorrect} / ${goal}`;
+
+  const sr = document.getElementById('streak-row');
+  sr.innerHTML = G.streak>=3 ? `<span class="streak-chip">🔥 ${G.streak}연속 &nbsp;×${getMult()}</span>` : '';
+
+  document.getElementById('q-card').className='q-card';
+  const lvb = document.getElementById('q-lv-badge');
+  lvb.className='q-lv-badge '+(LV_CLASS[item.lv]||'mid3');
+  lvb.textContent = LV_LABEL[item.lv]||'';
+  document.getElementById('q-dir').textContent = item.dir==='en-ko'?'영어 → 한글':'한글 → 영어';
+  document.getElementById('q-text').textContent = item.dir==='en-ko'?item.en:item.ko;
+  const fb = document.getElementById('q-feedback');
+  fb.textContent=''; fb.className='q-feedback';
+
+  document.getElementById('s-c').textContent=G.totalCorrect;
+  document.getElementById('s-w').textContent=G.totalWrong;
+  document.getElementById('s-s').textContent=G.maxStreak;
+  const m=getMult(); document.getElementById('s-p').textContent=m===1?'1×':`${m}×`;
+
+  const inp=document.getElementById('answer-input');
+  inp.value=''; inp.disabled=false; inp.className='answer-input';
+  inp.placeholder=item.dir==='en-ko'?'한글 뜻을 입력하세요':'영어 단어를 입력하세요';
+  document.getElementById('hint-btn').textContent='💡 힌트 (−50점)';
+  setTimeout(()=>inp.focus(),40);
+}
+
+// ═══════════════════════════════════════════
+//  SUBMIT
+// ═══════════════════════════════════════════
+function submitAnswer(){
+  if(G.waiting) return;
+  const inp=document.getElementById('answer-input');
+  if(!inp.value.trim()) return;
+  G.waiting=true; inp.disabled=true;
+
+  const item=G.current;
+  const ok=checkAns(inp.value,item);
+  const card=document.getElementById('q-card');
+  const fb=document.getElementById('q-feedback');
+
+  if(ok){
+    const m=getMult(), pts=Math.round(100*m+(G.hintUsed?0:20));
+    G.score+=pts; G.stageScore+=pts;
+    G.streak++; G.maxStreak=Math.max(G.maxStreak,G.streak);
+    G.totalCorrect++; G.stageCorrect++;
+    card.classList.add('correct');
+    fb.textContent='✓ 정답!'; fb.className='q-feedback ok';
+    showFloat(pts);
+    document.getElementById('hud-score').textContent=G.score.toLocaleString();
+    document.getElementById('s-c').textContent=G.totalCorrect;
+    document.getElementById('s-s').textContent=G.maxStreak;
+    const goal=stageGoal(G.stageIdx);
+    document.getElementById('prog-fill').style.width=Math.min(100,(G.stageCorrect/goal)*100)+'%';
+    document.getElementById('prog-r').textContent=`${G.stageCorrect} / ${goal}`;
+    if(G.stageCorrect>=goal){ setTimeout(showClear,500); return; }
+    setTimeout(renderQ,600);
+  } else {
+    G.streak=0; G.totalWrong++; G.stageMistakes++;
+    card.classList.add('wrong');
+    const ans=item.dir==='en-ko'?item.ko:item.en;
+    fb.innerHTML=`✗ 틀렸어요 &nbsp;| 정답: <b style="color:var(--green)">${ans}</b>`;
+    fb.className='q-feedback err';
+    inp.className='answer-input shake';
+    document.getElementById('s-w').textContent=G.totalWrong;
+    document.getElementById('s-p').textContent='1×';
+    setTimeout(renderQ,1400);
+  }
+}
+
+// ═══════════════════════════════════════════
+//  HINT / SKIP
+// ═══════════════════════════════════════════
+function useHint(){
+  if(G.waiting||G.hintUsed) return;
+  G.hintUsed=true;
+  G.score=Math.max(0,G.score-50);
+  document.getElementById('hud-score').textContent=G.score.toLocaleString();
+  const item=G.current;
+  const ans=item.dir==='en-ko'?item.ko:item.en;
+  document.getElementById('hint-btn').textContent=`💡 힌트: "${ans.slice(0,Math.ceil(ans.length*.35))}..."`;
+  document.getElementById('answer-input').focus();
+}
+function skipQ(){
+  if(G.waiting) return;
+  G.streak=0; G.totalWrong++; G.stageMistakes++;
+  const item=G.current;
+  const ans=item.dir==='en-ko'?item.ko:item.en;
+  const fb=document.getElementById('q-feedback');
+  fb.innerHTML=`건너뜀 | 정답: <b style="color:var(--green)">${ans}</b>`;
+  fb.className='q-feedback err';
+  document.getElementById('s-w').textContent=G.totalWrong;
+  document.getElementById('s-p').textContent='1×';
+  G.waiting=true; document.getElementById('answer-input').disabled=true;
+  setTimeout(renderQ,1200);
+}
+
+// ═══════════════════════════════════════════
+//  STAGE CLEAR
+// ═══════════════════════════════════════════
+function showClear(){
+  const total=G.stageCorrect+G.stageMistakes;
+  const r=calcRank(G.stageCorrect,total);
+  const bonus=Math.round(G.stageScore*.2);
+  G.score+=bonus;
+
+  // save stage progress
+  const newIdx = Math.min(G.stageIdx+1, MAX_STAGE-1);
+  saveStageIdx(G.grade,G.mode, newIdx > G.stageIdx ? newIdx : G.stageIdx);
+
+  // save session record
+  const sess = buildSessObj(G.stageIdx+1);
+  appendSession(sess);
+
+  document.getElementById('ov-emoji').textContent=r.emoji;
+  document.getElementById('ov-title').textContent=`${stageLabel(G.stageIdx)} 클리어!`;
+  document.getElementById('ov-rank').textContent=r.rank;
+  document.getElementById('ov-rank').style.color=r.color;
+  document.getElementById('ov-rank-label').textContent=r.msg;
+  document.getElementById('ov-sub').textContent=
+    `정확도 ${total?Math.round(G.stageCorrect/total*100):0}%  ·  ${stageLabel(G.stageIdx)} / ${stageTier(G.stageIdx)}`;
+  document.getElementById('ov-score').textContent=`🎁 보너스 +${bonus}pt → 총 ${G.score.toLocaleString()}pt`;
+  document.getElementById('ov-sc').textContent=G.stageCorrect;
+  document.getElementById('ov-sw').textContent=G.stageMistakes;
+  document.getElementById('ov-ss').textContent=G.maxStreak;
+
+  const nextBtn=document.getElementById('ov-next-btn');
+  if(G.stageIdx>=MAX_STAGE-1){
+    nextBtn.textContent='🏆 전 스테이지 완주! 처음부터';
+    nextBtn.onclick=()=>{
+      document.getElementById('ov-clear').classList.remove('show');
+      G.stageIdx=0; saveStageIdx(G.grade,G.mode,0);
+      resetStage(); G.pool=buildPool(); renderQ();
+    };
+  } else {
+    nextBtn.textContent='다음 스테이지 →';
+    nextBtn.onclick=nextStage;
+  }
+  document.getElementById('ov-clear').classList.add('show');
+}
+
+function nextStage(){
+  document.getElementById('ov-clear').classList.remove('show');
+  G.stageIdx++;
+  resetStage(); G.pool=buildPool(); renderQ();
+}
+function replayStage(){
+  document.getElementById('ov-clear').classList.remove('show');
+  resetStage(); G.pool=buildPool(); renderQ();
+}
+function resetStage(){ G.stageCorrect=0; G.stageMistakes=0; G.stageScore=0; }
+
+// ═══════════════════════════════════════════
+//  SESSION END (mid-exit)
+// ═══════════════════════════════════════════
+function buildSessObj(stageClear){
+  const total=G.totalCorrect+G.totalWrong;
+  const r=calcRank(G.totalCorrect,total);
+  return {
+    mode:G.mode, grade:G.grade,
+    score:G.score, correct:G.totalCorrect, wrong:G.totalWrong,
+    maxStreak:G.maxStreak, stageAt:G.stageIdx+1,
+    stageClear: stageClear||null,
+    rank:r.rank, time:Date.now(),
+  };
+}
+
+function endSession(fromClear){
+  if(fromClear){ document.getElementById('ov-clear').classList.remove('show'); goHome(); return; }
+  // mid-session exit: show result overlay
+  const total=G.totalCorrect+G.totalWrong;
+  const r=calcRank(G.totalCorrect,total);
+  const acc=total?Math.round(G.totalCorrect/total*100):0;
+  document.getElementById('res-emoji').textContent=r.emoji;
+  document.getElementById('res-rank').textContent=r.rank;
+  document.getElementById('res-rank').style.color=r.color;
+  document.getElementById('res-rank-label').textContent=r.msg;
+  document.getElementById('res-sub').textContent=`정확도 ${acc}%  ·  ${stageLabel(G.stageIdx)}`;
+  document.getElementById('res-score').textContent=`총 점수 ${G.score.toLocaleString()}pt`;
+  document.getElementById('res-sc').textContent=G.totalCorrect;
+  document.getElementById('res-sw').textContent=G.totalWrong;
+  document.getElementById('res-ss').textContent=G.maxStreak;
+  document.getElementById('ov-result').classList.add('show');
+}
+function confirmGoHome(){
+  document.getElementById('ov-result').classList.remove('show');
+  if(G.totalCorrect>0) appendSession(buildSessObj(null));
+  goHome();
+}
+function closeResultOv(){
+  document.getElementById('ov-result').classList.remove('show');
+  if(!G.waiting) document.getElementById('answer-input').focus();
+}
+
+// ═══════════════════════════════════════════
+//  FLOAT POINTS
+// ═══════════════════════════════════════════
+function showFloat(pts){
+  const el=document.createElement('div');
+  el.className='float-pt';
+  el.style.left=(15+Math.random()*60)+'%';
+  el.style.top=(20+Math.random()*25)+'%';
+  el.style.color=pts>=300?'#ffcf40':pts>=200?'#ffab4f':'#00e0a0';
+  el.textContent=`+${pts}${G.streak>=3?' 🔥':''}`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),900);
+}
+
+// ═══════════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════════
+function goHome(){
+  document.getElementById('ov-clear').classList.remove('show');
+  document.getElementById('ov-result').classList.remove('show');
+  buildGradeGrid();
+  renderTodayCard();
+  showScreen('sc-home');
+}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════════
+//  KEYBOARD
+// ═══════════════════════════════════════════
+document.getElementById('answer-input').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAnswer(); });
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+buildGradeGrid();
+renderTodayCard();
+</script>
+</body>
+</html>
